@@ -63,5 +63,61 @@ function applyDateFilter() {
     }
 }
 
+// Función para descargar los datos como PDF con el formato específico
+function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Agregar el encabezado del PDF
+    doc.setFontSize(18);
+    doc.text('Escuela Técnica Ciencias Aplicada Esteca PC', 20, 20);
+    
+    doc.setFontSize(16);
+    doc.text('Control de Asistencia Alumnos', 20, 30);
+    doc.text('Taller de Electrónica', 20, 40);
+
+    // Agregar la fecha filtrada
+    const filterDate = document.getElementById('filter-date').value || 'Sin filtrar';
+    doc.setFontSize(14);
+    doc.text(`Fecha de Asistencia: ${filterDate}`, 20, 50);
+
+    // Crear la tabla de asistencia
+    const table = document.getElementById('data-table');
+    const rows = table.getElementsByTagName('tr');
+
+    // Definir posición inicial para los datos de la tabla
+    let yPos = 70;
+
+    // Encabezado de la tabla
+    doc.setFontSize(12);
+    doc.text('Fecha y Hora', 20, yPos);
+    doc.text('Tarjeta ID', 60, yPos);
+    doc.text('Nombre', 100, yPos);
+    doc.text('Apellido', 140, yPos);
+    doc.text('Hora de Entrada', 180, yPos);
+
+    // Agregar los datos de la tabla
+    yPos += 10; // Aumentar la posición para empezar con los datos
+    for (let i = 1; i < rows.length; i++) { // Comenzar en 1 para saltar el encabezado
+        const cells = rows[i].getElementsByTagName('td');
+        doc.text(cells[0].textContent, 20, yPos); // Fecha y Hora
+        doc.text(cells[1].textContent, 60, yPos); // Tarjeta ID
+        doc.text(cells[2].textContent, 100, yPos); // Nombre
+        doc.text(cells[3].textContent, 140, yPos); // Apellido
+        doc.text(cells[4].textContent, 180, yPos); // Hora de Entrada
+        yPos += 10; // Siguiente fila
+
+        // Si se alcanza el final de la página, agregar una nueva
+        if (yPos > 280) {
+            doc.addPage();
+            yPos = 20;
+        }
+    }
+
+    // Descargar el archivo PDF
+    doc.save('asistencia.pdf');
+}
+
+
 // Llama a la función cuando la página cargue
 window.onload = fetchData;
