@@ -1,1 +1,36 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencia</title>
+    <link rel="stylesheet" href="/content/styles.css"> <!-- Archivo CSS externo -->
+</head>
+<body>
+    <h1>Datos del Canal de ThingSpeak</h1>
+
+    <div id="filter-container">
+        <label for="filter-date">Filtrar por fecha:</label>
+        <input type="date" id="filter-date">
+        <button onclick="applyDateFilter()">Filtrar</button>
+    </div>
+
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>UID de Tarjeta RFID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Hora de Entrada</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se llenarán los datos -->
+        </tbody>
+    </table>
+
+    <script src="/JS/script.js"></script>
+</body>
+</html>
