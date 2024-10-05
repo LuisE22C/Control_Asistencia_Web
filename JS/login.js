@@ -27,7 +27,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
       document.getElementById('message').textContent = "Login exitoso, redirigiendo...";
       // Redirigir a la página principal si el login es exitoso
       setTimeout(() => {
-        window.location.href = 'index.html'; // Redirigir a index.html
+        window.location.href = 'main.html'; // Redirigir a index.html
       }, 2000);  // Esperar 2 segundos antes de redirigir
     })
     .catch((error) => {
