@@ -37,14 +37,20 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     });
 });
 
-// Cerrar sesión
-document.getElementById('logoutButton').addEventListener('click', function () {
+// Cerrar sesión al hacer clic en el enlace
+document.getElementById('logoutLink').addEventListener('click', function (event) {
+  event.preventDefault();  // Prevenir el comportamiento por defecto del enlace
+
   signOut(auth).then(() => {
+    // Mostrar un mensaje confirmando que se cerró la sesión
     document.getElementById('message').textContent = "Sesión cerrada correctamente.";
-    document.getElementById('logoutButton').style.display = 'none';
-    // Redirigir a la página de inicio de sesión si es necesario
-    window.location.href = 'login.html';  // Cambia esto por la página de inicio de sesión si es diferente
+
+    // Redirigir a la página de inicio de sesión
+    window.location.href = 'index.html';  // Cambia esto por la página de inicio de sesión si es diferente
   }).catch((error) => {
+    // Mostrar un mensaje de error si ocurre un problema al cerrar sesión
     document.getElementById('message').textContent = "Error al cerrar sesión: " + error.message;
   });
 });
+
+
