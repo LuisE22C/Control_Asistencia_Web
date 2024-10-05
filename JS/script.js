@@ -116,7 +116,11 @@ function downloadPDF() {
 
     // Descargar el archivo PDF
     doc.save('asistencia.pdf');
+
+
+    
 }
+
 
 
 // Llama a la función cuando la página cargue

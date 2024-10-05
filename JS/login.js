@@ -37,17 +37,6 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     });
 });
 
-// Verificar el estado del usuario (si está autenticado)
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    document.getElementById('message').textContent = "Usuario autenticado: " + user.email;
-    document.getElementById('logoutButton').style.display = 'block';
-  } else {
-    document.getElementById('message').textContent = "No hay usuario autenticado.";
-    document.getElementById('logoutButton').style.display = 'none';
-  }
-});
-
 // Cerrar sesión
 document.getElementById('logoutButton').addEventListener('click', function () {
   signOut(auth).then(() => {
