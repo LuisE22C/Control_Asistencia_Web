@@ -53,23 +53,7 @@ document.getElementById('logoutLink').addEventListener('click', function (event)
   });
 });
 
-// Función para cerrar sesión y redirigir al usuario al index
-function logoutUser() {
-    signOut(auth).then(() => {
-      // Limpiar el historial del navegador
-      history.pushState(null, null, 'index.html');
-      window.location.href = 'index.html';
-  
-      // Bloquear el uso del botón de "atrás" del navegador
-      window.addEventListener('popstate', function (event) {
-        history.pushState(null, null, 'index.html');
-      });
-    }).catch((error) => {
-      // Mostrar un mensaje de error si ocurre un problema al cerrar sesión
-      document.getElementById('message').textContent = "Error al cerrar sesión: " + error.message;
-    });
-  }
-  
+
 
 
 
