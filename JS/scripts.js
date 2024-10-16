@@ -119,22 +119,40 @@ function applyDateFilter() {
 }
 
 // Función para descargar los datos como PDF con el formato específico
-function downloadPDF() {
+async function downloadPDF() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    const doc = new jsPDF('landscape', 'mm', 'letter'); // Horizontal, tamaño legal
+
+    // Función para convertir una imagen de URL a base64
+    async function getBase64FromUrl(url) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    // Cargar la imagen desde la URL
+    const imageUrl = '/assets/img/esteca.png';
+    const imageBase64 = await getBase64FromUrl(imageUrl);
+
+    // Agregar la imagen al PDF (coordenadas y tamaño ajustables)
+    doc.addImage(imageBase64, 'JPEG', 10, 10, 30, 30); // (X, Y, width, height)
 
     // Agregar el encabezado del PDF
     doc.setFontSize(18);
-    doc.text('Escuela Técnica Ciencias Aplicada Esteca PC', 20, 20);
-    
+    doc.text('Escuela Técnica Ciencias Aplicada Esteca PC', 70, 20);
+
     doc.setFontSize(16);
-    doc.text('Control de Asistencia Alumnos', 20, 30);
-    doc.text('Taller de Electrónica', 20, 40);
+    doc.text('Control de Asistencia Alumnos', 70, 30);
+    doc.text('Taller de Electrónica', 70, 40);
 
     // Agregar la fecha filtrada
     const filterDate = document.getElementById('filter-date').value || 'Sin filtrar';
     doc.setFontSize(14);
-    doc.text(`Fecha de Asistencia: ${filterDate}`, 20, 50);
+    doc.text(`Fecha de Asistencia: ${filterDate}`, 70, 50);
 
     // Crear la tabla de asistencia
     const table = document.getElementById('data-table');
@@ -146,8 +164,8 @@ function downloadPDF() {
     // Encabezado de la tabla
     doc.setFontSize(12);
     doc.text('Fecha y Hora', 20, yPos);
-    doc.text('Tarjeta ID', 60, yPos);
-    doc.text('Nombre', 100, yPos);
+    doc.text('Tarjeta ID', 80, yPos);
+    doc.text('Nombre', 110, yPos);
     doc.text('Apellido', 140, yPos);
     doc.text('Hora de Entrada', 180, yPos);
 
@@ -156,14 +174,14 @@ function downloadPDF() {
     for (let i = 1; i < rows.length; i++) { // Comenzar en 1 para saltar el encabezado
         const cells = rows[i].getElementsByTagName('td');
         doc.text(cells[0].textContent, 20, yPos); // Fecha y Hora
-        doc.text(cells[1].textContent, 60, yPos); // Tarjeta ID
-        doc.text(cells[2].textContent, 100, yPos); // Nombre
+        doc.text(cells[1].textContent, 80, yPos); // Tarjeta ID
+        doc.text(cells[2].textContent, 110, yPos); // Nombre
         doc.text(cells[3].textContent, 140, yPos); // Apellido
         doc.text(cells[4].textContent, 180, yPos); // Hora de Entrada
         yPos += 10; // Siguiente fila
 
         // Si se alcanza el final de la página, agregar una nueva
-        if (yPos > 280) {
+        if (yPos > 180) {
             doc.addPage();
             yPos = 20;
         }
@@ -171,8 +189,8 @@ function downloadPDF() {
 
     // Descargar el archivo PDF
     doc.save('asistencia.pdf');
-    
 }
+
 
 
 // Llama a la función cuando la página cargue
