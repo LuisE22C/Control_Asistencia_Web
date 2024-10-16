@@ -214,73 +214,50 @@ function downloadXLS() {
     XLSX.writeFile(wb, "asistencia.xlsx");
 }
 
-// Función para buscar por nombre o apellido
-function searchByName() {
-    const input = document.getElementById('search-name').value.toLowerCase(); // Convertir a minúsculas para evitar problemas de mayúsculas
-    const table = document.getElementById('data-table');
-    const rows = table.getElementsByTagName('tr');
-
-    for (let i = 1; i < rows.length; i++) { // Empezar en 1 para evitar el encabezado
-        const nombreCell = rows[i].getElementsByTagName('td')[2]; // Columna del nombre
-        const apellidoCell = rows[i].getElementsByTagName('td')[3]; // Columna del apellido
-        const nombre = nombreCell.textContent.toLowerCase();
-        const apellido = apellidoCell.textContent.toLowerCase();
-
-        // Mostrar la fila si coincide el nombre o apellido
-        if (nombre.includes(input) || apellido.includes(input)) {
-            rows[i].style.display = ''; // Mostrar la fila
-        } else {
-            rows[i].style.display = 'none'; // Ocultar la fila
-        }
+function applyFilter() {
+    const filterText = document.getElementById('search-name').value.toLowerCase(); // Capturar el valor del campo de búsqueda
+    if (filterText) {
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Filtrar los resultados por nombre o apellido
+            const feeds = data.feeds.filter(feed => 
+                feed.field2.toLowerCase().includes(filterText) ||  // Filtrar por nombre
+                feed.field3.toLowerCase().includes(filterText)     // Filtrar por apellido
+            );
+            displayData(feeds); // Mostrar los datos filtrados
+        })
+        .catch(error => {
+            console.error("Error al filtrar los datos:", error);
+        });
+    } else {
+        fetchData(); // Si no se ha introducido texto, mostrar todos los datos
     }
 }
 
-// Función para buscar por hora de entrada
-function searchByTime() {
-    const input = document.getElementById('search-time').value; // Obtener el valor del campo de hora
-    const table = document.getElementById('data-table');
-    const rows = table.getElementsByTagName('tr');
+function displayData(feeds) {
+    const tableBody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
+    
+    // Limpiar la tabla antes de añadir los datos
+    tableBody.innerHTML = "";
 
-    for (let i = 1; i < rows.length; i++) { // Empezar en 1 para evitar el encabezado
-        const horaCell = rows[i].getElementsByTagName('td')[4]; // Columna de la hora de entrada
-        const hora = horaCell.textContent;
+    // Iterar sobre cada feed y agregarlo a la tabla
+    feeds.forEach(feed => {
+        const row = tableBody.insertRow(); // Insertar una nueva fila en la tabla
 
-        // Mostrar la fila si coincide la hora de entrada
-        if (hora.includes(input)) {
-            rows[i].style.display = ''; // Mostrar la fila
-        } else {
-            rows[i].style.display = 'none'; // Ocultar la fila
-        }
-    }
+        const dateCell = row.insertCell(0); // Celda para la fecha y hora
+        const uidCell = row.insertCell(1);  // Celda para el UID de la tarjeta
+        const nombreCell = row.insertCell(2);  // Celda para el nombre
+        const apellidoCell = row.insertCell(3);  // Celda para el apellido
+        const horaCell = row.insertCell(4);  // Celda para la hora de entrada
+
+        // Asignar los valores obtenidos
+        dateCell.textContent = feed.created_at; 
+        uidCell.textContent = feed.field1; // UID de la tarjeta RFID (Campo 1)
+        nombreCell.textContent = feed.field2; // Nombre (Campo 2)
+        apellidoCell.textContent = feed.field3; // Apellido (Campo 3)
+        horaCell.textContent = feed.field4; // Hora de entrada (Campo 4)
+    });
 }
 
-// Función para aplicar ambos filtros (nombre/apellido y hora)
-function applyFilters() {
-    const nameInput = document.getElementById('search-name').value.toLowerCase();
-    const timeInput = document.getElementById('search-time').value;
-
-    const table = document.getElementById('data-table');
-    const rows = table.getElementsByTagName('tr');
-
-    for (let i = 1; i < rows.length; i++) { // Empezar en 1 para evitar el encabezado
-        const nombreCell = rows[i].getElementsByTagName('td')[2]; // Columna del nombre
-        const apellidoCell = rows[i].getElementsByTagName('td')[3]; // Columna del apellido
-        const horaCell = rows[i].getElementsByTagName('td')[4]; // Columna de la hora de entrada
-
-        const nombre = nombreCell.textContent.toLowerCase();
-        const apellido = apellidoCell.textContent.toLowerCase();
-        const hora = horaCell.textContent.substring(0, 5); // Solo la hora y minutos (HH:MM)
-
-        // Verificar las condiciones de búsqueda
-        const matchesName = !nameInput || nombre.includes(nameInput) || apellido.includes(nameInput); // Si el campo de nombre está vacío, coinciden todos
-        const matchesTime = !timeInput || hora === timeInput; // Si el campo de hora está vacío, coinciden todos
-
-        // Mostrar la fila solo si ambos filtros coinciden
-        if (matchesName && matchesTime) {
-            rows[i].style.display = ''; // Mostrar la fila
-        } else {
-            rows[i].style.display = 'none'; // Ocultar la fila
-        }
-    }
-}
 

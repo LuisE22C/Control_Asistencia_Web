@@ -142,18 +142,18 @@
                 </div>
 
             <!-- Contenedor para los filtros de búsqueda -->
-<div class="container mb-3">
-    <div class="row">
-        <!-- Campo para buscar por nombre o apellido -->
-        <div class="col-md-6">
-            <input type="text" id="search-name" class="form-control" placeholder="Buscar por nombre o apellido" onkeyup="applyFilters()">
-        </div>
-        <!-- Campo para buscar por hora (con selector de hora) -->
-        <div class="col-md-6">
-            <input type="time" id="search-time" class="form-control" onchange="applyFilters()">
-        </div>
-    </div>
-</div>
+            <div class="container mb-3">
+                <div class="row">
+                    <!-- Campo para buscar por nombre -->
+                    <div class="col-md-6">
+                        <input type="text" id="search-name" class="form-control" placeholder="Buscar por Nombre o Apellido">
+                    </div>
+                    <!-- Botón para ejecutar la búsqueda -->
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-primary" onclick="applyFilter()">Buscar</button>
+                    </div>
+                </div>
+            </div>
 
 <!-- Tabla de datos -->
 <div class="table-responsive">
