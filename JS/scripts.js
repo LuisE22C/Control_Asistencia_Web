@@ -1,36 +1,59 @@
-// Reemplaza estos valores con tu propio Channel ID y API Key
-const channelID = '2659610'; // Tu ID del canal
-const apiKey = 'BXLMO6DV3DS8HGUF'; // Tu API Key de lectura
-const results = 100; // Número de resultados que deseas obtener (máximo 8000)
+const channelID = '2659610'; 
+const apiKey = 'BXLMO6DV3DS8HGUF'; 
+const results = 100; 
 
 // URL para obtener los datos del canal en formato JSON
 const url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?api_key=${apiKey}&results=${results}`;
+
+
+let currentPage = 1;
+const recordsPerPage = 20; 
+let totalPages = 1; 
+let allFeeds = []; 
 
 // Función para obtener los datos de ThingSpeak y cargarlos en la tabla
 function fetchData() {
     fetch(url)
     .then(response => response.json())
     .then(data => {
-        const feeds = data.feeds;
-        displayData(feeds);
+        allFeeds = data.feeds; // Guardar todos los datos en la variable global
+        applyDateFilter(); // Aplicar el filtro de fecha al cargar los datos
     })
     .catch(error => {
         console.error("Error al obtener los datos:", error);
     });
 }
 
-// Función para mostrar los datos en la tabla
+// Función para aplicar el filtro de fecha
+function applyDateFilter() {
+    const filterDate = document.getElementById('filter-date').value;
+    let filteredFeeds = allFeeds;
+
+    // Si hay una fecha en el filtro, filtrar los datos por esa fecha
+    if (filterDate) {
+        filteredFeeds = allFeeds.filter(feed => feed.created_at.startsWith(filterDate));
+    }
+
+    // Actualizar la paginación después del filtro
+    totalPages = Math.ceil(filteredFeeds.length / recordsPerPage);
+    displayData(filteredFeeds); // Mostrar los datos filtrados
+}
+
+// Función para mostrar los datos de la página actual
 function displayData(feeds) {
     const tableBody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
-    
-    // Limpiar la tabla antes de añadir los datos
-    tableBody.innerHTML = "";
+    tableBody.innerHTML = ""; // Limpiar la tabla antes de añadir los datos
 
-    // Iterar sobre cada feed y agregarlo a la tabla
-    feeds.forEach(feed => {
+    // Calcular el índice de los registros que se deben mostrar
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = Math.min(startIndex + recordsPerPage, feeds.length);
+
+    // Iterar sobre los feeds correspondientes a la página actual
+    for (let i = startIndex; i < endIndex; i++) {
+        const feed = feeds[i];
         const row = tableBody.insertRow(); // Insertar una nueva fila en la tabla
 
-        const dateCell = row.insertCell(0); // Celda para la fecha y hora
+        const dateCell = row.insertCell(0); // Celda para la fecha
         const uidCell = row.insertCell(1);  // Celda para el UID de la tarjeta
         const nombreCell = row.insertCell(2);  // Celda para el nombre
         const apellidoCell = row.insertCell(3);  // Celda para el apellido
@@ -38,16 +61,52 @@ function displayData(feeds) {
         const entradaCell = row.insertCell(5);  // Celda para la hora de entrada
         const salidaCell = row.insertCell(6);  // Celda para la hora de salida
 
+        // Extraer solo la fecha (YYYY-MM-DD) de created_at
+        const dateOnly = feed.created_at ? feed.created_at.split('T')[0] : "- - -";
+
         // Asignar los valores obtenidos
-        dateCell.textContent = feed.created_at || "- - -";
+        dateCell.textContent = dateOnly || "- - -";
         uidCell.textContent = feed.field1 || "- - -";
         nombreCell.textContent = feed.field2 || "- - -";
         apellidoCell.textContent = feed.field3 || "- - -";
         gradoCell.textContent = feed.field4 || "- - -";
         entradaCell.textContent = feed.field5 || "- - -";
         salidaCell.textContent = feed.field6 || "- - -";
-    });
+    }
+
+    // Actualizar la información de la página
+    document.getElementById('page-info').textContent = `Página ${currentPage} de ${totalPages}`;
 }
+
+// Función para cambiar a la página anterior
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        applyDateFilter(); // Aplicar el filtro de fecha al cambiar de página
+    }
+}
+
+// Función para cambiar a la página siguiente
+function nextPage() {
+    if (currentPage < totalPages) {
+        currentPage++;
+        applyDateFilter(); // Aplicar el filtro de fecha al cambiar de página
+    }
+}
+
+// Escucha los eventos de los botones de paginación
+document.getElementById('prev-page').addEventListener('click', prevPage);
+document.getElementById('next-page').addEventListener('click', nextPage);
+
+// Escucha los cambios en el filtro de fecha
+document.getElementById('filter-date').addEventListener('input', () => {
+    currentPage = 1; // Reiniciar a la primera página cuando se aplique un filtro
+    applyDateFilter(); // Volver a aplicar el filtro de fecha cuando cambie
+});
+
+// Cargar los datos cuando la página cargue
+window.onload = fetchData;
+
 
 // Función para aplicar el filtro de fecha
 function applyDateFilter() {
@@ -131,7 +190,7 @@ async function downloadPDF() {
 
     // Encabezado de la tabla
     doc.setFontSize(12);
-    doc.text('Fecha y Hora', 20, yPos);
+    doc.text('Fecha', 20, yPos);
     doc.text('Tarjeta ID', 80, yPos);
     doc.text('Nombre', 110, yPos);
     doc.text('Apellido', 140, yPos);
