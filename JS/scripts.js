@@ -214,9 +214,7 @@ window.onload = fetchData;
 
 // Escucha los eventos de filtro y descarga
 document.getElementById('filter-date').addEventListener('change', applyDateFilter);
-document.getElementById('search-name').addEventListener('keyup', applyFilter);
-document.getElementById('download-pdf').addEventListener('click', downloadPDF);
-document.getElementById('download-xls').addEventListener('click', downloadXLS);
+
 
 
 
