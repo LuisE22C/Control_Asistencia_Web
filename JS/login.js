@@ -16,46 +16,55 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Manejador del formulario de inicio de sesión
-document.getElementById('loginForm').addEventListener('submit', function (event) {
-  event.preventDefault(); // Evitar el envío automático del formulario
+document.addEventListener('DOMContentLoaded', function () {
+  const loginForm = document.getElementById('loginForm');
 
-  // Obtener los valores de email y contraseña
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+  // Verificar si el formulario existe antes de agregar el event listener
+  if (loginForm) {
+    loginForm.addEventListener('submit', function (event) {
+      event.preventDefault(); // Evitar el envío automático del formulario
 
-  // Iniciar sesión con Firebase Authentication
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      // Redirigir a la página main.html
-      window.location.href = 'main.html';
-    })
-    .catch((error) => {
-      // Mostrar alerta en caso de error
-      alert("Usuario incorrecto. Por favor, verifica tus credenciales.");
+      // Obtener los valores de email y contraseña
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Iniciar sesión con Firebase Authentication
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          // Redirigir a la página main.html
+          window.location.href = 'main.html';
+        })
+        .catch((error) => {
+          // Mostrar alerta en caso de error
+          alert("Usuario incorrecto. Por favor, verifica tus credenciales.");
+        });
     });
-});
-
-// Cerrar sesión al hacer clic en el enlace
-document.getElementById('logoutLink').addEventListener('click', function (event) {
-  event.preventDefault();  // Prevenir el comportamiento por defecto del enlace
-
-  signOut(auth).then(() => {
-    // Mostrar un mensaje confirmando que se cerró la sesión
-    document.getElementById('message').textContent = "Sesión cerrada correctamente.";
-
-    // Redirigir a la página de inicio de sesión
-    window.location.href = 'index.html';  // Cambia esto por la página de inicio de sesión si es diferente
-  }).catch((error) => {
-    // Mostrar un mensaje de error si ocurre un problema al cerrar sesión
-    document.getElementById('message').textContent = "Error al cerrar sesión: " + error.message;
-  });
+  } else {
+    console.error("El formulario de inicio de sesión no fue encontrado.");
+  }
 });
 
 
+document.addEventListener('DOMContentLoaded', function () {
+  // Manejador del botón de cerrar sesión
+  const logoutButton = document.getElementById('logoutButton');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', function (event) {
+      event.preventDefault();  // Prevenir el comportamiento por defecto del botón
 
+      signOut(auth).then(() => {
+        // Mostrar un mensaje confirmando que se cerró la sesión
+        alert("Sesión cerrada correctamente.");
 
-
-
-
+        // Redirigir a la página de inicio de sesión
+        window.location.href = 'index.html';
+      }).catch((error) => {
+        // Mostrar un mensaje de error si ocurre un problema al cerrar sesión
+        alert("Error al cerrar sesión: " + error.message);
+      });
+    });
+  } else {
+    console.error("El botón de cerrar sesión no fue encontrado.");
+  }
+});
