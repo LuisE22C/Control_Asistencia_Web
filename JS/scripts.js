@@ -126,27 +126,6 @@ function applyDateFilter() {
     }
 }
 
-// Función para aplicar el filtro de búsqueda por nombre o apellido
-function applyFilter() {
-    const filterText = document.getElementById('search-name').value.toLowerCase();
-    if (filterText) {
-        fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            const feeds = data.feeds.filter(feed => 
-                (feed.field2 && feed.field2.toLowerCase().includes(filterText)) || 
-                (feed.field3 && feed.field3.toLowerCase().includes(filterText))
-            );
-            displayData(feeds);
-        })
-        .catch(error => {
-            console.error("Error al filtrar los datos:", error);
-        });
-    } else {
-        fetchData();
-    }
-}
-
 // Función para descargar los datos como PDF
 async function downloadPDF() {
     const { jsPDF } = window.jspdf;
@@ -238,3 +217,7 @@ document.getElementById('filter-date').addEventListener('change', applyDateFilte
 document.getElementById('search-name').addEventListener('keyup', applyFilter);
 document.getElementById('download-pdf').addEventListener('click', downloadPDF);
 document.getElementById('download-xls').addEventListener('click', downloadXLS);
+
+
+
+
